@@ -47,7 +47,6 @@ A responsive, single-page marketing website for **OURA & CO.**, a (fictional) in
 ├── script.js             # Services accordion + contact-form handler
 ├── assets/
 │   └── img/              # Optimized photography (webp + jpg)
-├── Oura Interiors.html   # Original single-file export (self-contained)
 └── README.md
 ```
 

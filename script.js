@@ -48,23 +48,35 @@
     var html = '';
     services.forEach(function (s, i) {
       var isOpen = openIndex === i;
+      var panelId = 'svc-panel-' + i;
       html +=
-        '<div class="svc' + (isOpen ? ' is-open' : '') + '" data-index="' + i + '">' +
+        '<div class="svc' + (isOpen ? ' is-open' : '') + '" data-index="' + i + '" ' +
+             'role="button" tabindex="0" ' +
+             'aria-expanded="' + (isOpen ? 'true' : 'false') + '" ' +
+             'aria-controls="' + panelId + '">' +
           '<span class="svc__num">' + pad(i + 1) + '</span>' +
           '<div>' +
             '<h3 class="svc__title">' + s.title + '</h3>' +
-            '<div class="svc__panel">' +
+            '<div class="svc__panel" id="' + panelId + '">' +
               '<div><div class="svc__inner">' +
                 '<p>' + s.body + '</p>' +
                 '<div class="svc__photo"><img src="' + s.photo + '" alt="' + s.title + '" loading="lazy"></div>' +
               '</div></div>' +
             '</div>' +
           '</div>' +
-          '<span class="svc__sign">' + (isOpen ? '–' : '+') + '</span>' +
+          '<span class="svc__sign" aria-hidden="true">' + (isOpen ? '–' : '+') + '</span>' +
         '</div>';
     });
     html += '<div class="end-line"></div>';
     list.innerHTML = html;
+  }
+
+  function toggle(i) {
+    openIndex = openIndex === i ? -1 : i;
+    render();
+    // Re-focus the row that was activated (render() replaces the DOM).
+    var next = list.querySelector('.svc[data-index="' + i + '"]');
+    if (next) next.focus();
   }
 
   if (list) {
@@ -72,9 +84,15 @@
     list.addEventListener('click', function (e) {
       var row = e.target.closest('.svc');
       if (!row) return;
-      var i = parseInt(row.getAttribute('data-index'), 10);
-      openIndex = openIndex === i ? -1 : i;
-      render();
+      toggle(parseInt(row.getAttribute('data-index'), 10));
+    });
+    // Keyboard support: Enter / Space activate the focused row.
+    list.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+      var row = e.target.closest('.svc');
+      if (!row) return;
+      e.preventDefault();
+      toggle(parseInt(row.getAttribute('data-index'), 10));
     });
   }
 
